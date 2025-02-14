@@ -34,6 +34,29 @@ def index():
     return render_template('register.html')
 
 
+@app.route('/login', methods=['GET'])
+def login_page():
+    return render_template('login.html')
+
+
+@app.route('/login', methods=['POST'])
+def login():
+    username = request.form['username']
+    entered_password = request.form['password']
+
+    connection = sqlite3.connect('home/ubuntu/flaskapp/lab2_database.db')
+    cursor = connection.cursor()
+    correct_password = cursor.execute(f'SELECT password FROM users WHERE username = {username}').fetchone()
+
+    if correct_password is None:
+        return 'Invalid username'
+
+    if entered_password == correct_password:
+        return redirect(url_for('profile', username=username))
+    else:
+        return 'Incorrect password'
+
+
 @app.route('/register', methods=['POST'])
 def register():
     username = request.form['username']
