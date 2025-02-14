@@ -16,14 +16,17 @@ import sqlite3
 app = Flask(__name__)
 
 # SQLite setup
-setup_connection = sqlite3.connect('lab2_database.db')
-setup_cursor = setup_connection.cursor()
-setup_cursor.execute(
-    """CREATE TABLE IF NOT EXISTS users
-    (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT NOT NULL, password TEXT NOT NULL, email TEXT NOT NULL, first_name TEXT NOT NULL, last_name TEXT NOT NULL, address TEXT NOT NULL)"""
-)
-setup_connection.commit()
-setup_connection.close()
+try:
+    setup_connection = sqlite3.connect('home/ubuntu/flaskapp/lab2_database.db')
+    setup_cursor = setup_connection.cursor()
+    setup_cursor.execute(
+        """CREATE TABLE IF NOT EXISTS users
+        (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT NOT NULL, password TEXT NOT NULL, email TEXT NOT NULL, first_name TEXT NOT NULL, last_name TEXT NOT NULL, address TEXT NOT NULL)"""
+    )
+    setup_connection.commit()
+    setup_connection.close()
+except sqlite3.OperationalError:
+    print('Unable to open database file')
 
 
 @app.route('/')
@@ -40,7 +43,7 @@ def register():
     last_name = request.form['last_name']
     address = request.form['address']
 
-    connection = sqlite3.connect('lab2_database.db')
+    connection = sqlite3.connect('home/ubuntu/flaskapp/lab2_database.db')
     cursor = connection.cursor()
     cursor.execute(f"INSERT INTO users (username, password, email, first_name, last_name, address) VALUES ({username}, {password}, {email}, {first_name}, {last_name}, {address})")
     connection.commit()
