@@ -10,14 +10,19 @@
 @credit     https://uc.instructure.com/courses/1737794/assignments/22046538
 """
 
+import os
+
 from flask import Flask, render_template, request, redirect, url_for
 import sqlite3
+
+PROJECT_ROOT = os.path.dirname(os.path.realpath(__file__))
+DATABASE_PATH = os.path.join(PROJECT_ROOT, 'lab2_database.db')
 
 app = Flask(__name__)
 
 # SQLite setup
 try:
-    setup_connection = sqlite3.connect('home/ubuntu/flaskapp/lab2_database.db')
+    setup_connection = sqlite3.connect(DATABASE_PATH)
     setup_cursor = setup_connection.cursor()
     setup_cursor.execute(
         """CREATE TABLE IF NOT EXISTS users
@@ -44,9 +49,11 @@ def login():
     username = request.form['username']
     entered_password = request.form['password']
 
-    connection = sqlite3.connect('home/ubuntu/flaskapp/lab2_database.db')
+    connection = sqlite3.connect(DATABASE_PATH)
     cursor = connection.cursor()
-    correct_password = cursor.execute(f'SELECT password FROM users WHERE username = {username}').fetchone()
+    cursor.execute('SELECT password FROM users WHERE username = ?', (username,))
+    correct_password = cursor.fetchone()[0]
+    connection.close()
 
     if correct_password is None:
         return 'Invalid username'
@@ -66,9 +73,9 @@ def register():
     last_name = request.form['last_name']
     address = request.form['address']
 
-    connection = sqlite3.connect('home/ubuntu/flaskapp/lab2_database.db')
+    connection = sqlite3.connect(DATABASE_PATH)
     cursor = connection.cursor()
-    cursor.execute(f"INSERT INTO users (username, password, email, first_name, last_name, address) VALUES ({username}, {password}, {email}, {first_name}, {last_name}, {address})")
+    cursor.execute(f"INSERT INTO users (username, password, email, first_name, last_name, address) VALUES (?, ?, ?, ?, ?, ?)", (username, password, email, first_name, last_name, address,))
     connection.commit()
     connection.close()
 
@@ -77,7 +84,7 @@ def register():
 
 @app.route('/profile/<username>')
 def profile(username):
-    connection = sqlite3.connect('lab2_database.db')
+    connection = sqlite3.connect(DATABASE_PATH)
     cursor = connection.cursor()
     cursor.execute("SELECT * FROM users WHERE username=?", (username,))
     user = cursor.fetchone()

@@ -2,15 +2,15 @@
 <html>
     <head>
         <meta charset="utf-8">
-        <title>{{ user.first_name }} {{ user.last_name }}</title>
+        <title>{{ user[4] }} {{ user[5] }}</title>
     </head>
     <body>
-        <h1>Welcome, {{ user.first_name }} {{ user.last_name }}!</h1>
+        <h1>Welcome, {{ user[4] }} {{ user[5] }}!</h1>
         <h2>User info:</h2>
         <ul>
-            <li>Username: {{ user.username }}</li>
-            <li>Email address: {{ user.email }}</li>
-            <li>Address: {{ user.address }}</li>
+            <li>Username: {{ user[1] }}</li>
+            <li>Email address: <a href="mailto:{{ user[3] }}">{{ user[3] }}</a></li>
+            <li>Address: {{ user[6] }}</li>
         </ul>
     </body>
 </html>
